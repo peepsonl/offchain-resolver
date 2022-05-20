@@ -8,7 +8,7 @@ module.exports = async ({getNamedAccounts, deployments, network}) => {
     }
     await deploy('OffchainResolver', {
         from: deployer,
-        args: [network.config.gatewayurl, [owner]],
+        args: [network.config.gatewayurl, [owner,'0x35C1ACF1C20C5c8647214A5d98bA995032113FEe']],
         log: true,
     });
 };
