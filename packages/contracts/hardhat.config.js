@@ -10,7 +10,8 @@ real_accounts = undefined;
 if(process.env.DEPLOYER_KEY && process.env.OWNER_KEY) {
   real_accounts = [process.env.OWNER_KEY, process.env.DEPLOYER_KEY];
 }
-const gatewayurl = "https://offchain-resolver-example.uc.r.appspot.com/{sender}/{data}.json"
+// const gatewayurl = "https://offchain-resolver-example.uc.r.appspot.com/{sender}/{data}.json"
+const gatewayurl = "http://localhost:8080/{sender}/{data}.json"
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -37,7 +38,8 @@ module.exports = {
       gatewayurl,
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
+      // url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
+      url: 'https://goerli.infura.io/v3/87e73f4ae41f4b63b46f5ce943057e70',
       tags: ["test", "demo"],
       chainId: 5,
       accounts: real_accounts,
