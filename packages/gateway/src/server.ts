@@ -2,7 +2,7 @@ import { Server } from '@chainlink/ccip-read-server';
 import { ethers, BytesLike } from 'ethers';
 import { hexConcat, Result } from 'ethers/lib/utils';
 import { ETH_COIN_TYPE } from './utils';
-import { abi as IResolverService_abi } from '@ensdomains/offchain-resolver-contracts/artifacts/contracts/OffchainResolver.sol/IResolverService.json';
+import { abi as IResolverService_abi } from './IResolverService.json';
 import { abi as Resolver_abi } from '@ensdomains/ens-contracts/artifacts/contracts/resolvers/Resolver.sol/Resolver.json';
 const Resolver = new ethers.utils.Interface(Resolver_abi);
 
