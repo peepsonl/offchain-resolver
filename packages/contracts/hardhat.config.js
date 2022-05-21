@@ -39,8 +39,7 @@ module.exports = {
       gatewayUrls,
     },
     goerli: {
-      // url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
-      url: "https://goerli.infura.io/v3/1e5daf82dd6e4cefb0c4982606872d75",
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
       tags: ["test", "demo"],
       chainId: 5,
       accounts: owner,
