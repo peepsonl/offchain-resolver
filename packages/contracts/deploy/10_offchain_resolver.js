@@ -1,15 +1,19 @@
 module.exports = async ({ getNamedAccounts, deployments, network }) => {
   const { deploy } = deployments;
-  const { ...allAccounts } = await getNamedAccounts();
+  const { owner } = await getNamedAccounts();
   if(!network.config.gatewayUrls){
       throw("gatewayUrls is missing on hardhat.config.js");
   }
+  if(!network.config.signers){
+      throw("signers is missing on hardhat.config.js");
+  }
+
   try {
     const res = await deploy("OffchainResolver", {
-      from: deployer,
+      from: owner,
       args: [
         network.config.gatewayUrls,
-        [...allAccounts],
+        network.config.signers,
       ],
       log: true,
     });
