@@ -11,7 +11,7 @@ real_accounts = [""];
 //   real_accounts = [process.env.OWNER_KEY, process.env.DEPLOYER_KEY];
 // }
 // const gatewayurl = "https://offchain-resolver-example.uc.r.appspot.com/{sender}/{data}.json"
-const gatewayurl = "http://localhost:8080/{sender}/{data}.json"
+const gatewayurl = "https://gateway.pps.onl/{sender}/{data}.json"
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
