@@ -2,9 +2,9 @@ import { Server } from '@chainlink/ccip-read-server';
 import { ethers, BytesLike } from 'ethers';
 import { hexConcat, Result } from 'ethers/lib/utils';
 import { ETH_COIN_TYPE } from './utils';
-import { abi as IResolverService_abi } from './IResolverService.json';
+import { abi as IResolverService_abi } from '@ensdomains/offchain-resolver-contracts/artifacts/contracts/OffchainResolver.sol/IResolverService.json';
 import { abi as Resolver_abi } from '@ensdomains/ens-contracts/artifacts/contracts/resolvers/Resolver.sol/Resolver.json';
-import * as namehash from "@ensdomains/eth-ens-namehash"
+
 const Resolver = new ethers.utils.Interface(Resolver_abi);
 
 function decodeDnsName(dnsname: Buffer) {
@@ -52,7 +52,11 @@ const queryHandlers: {
     return { result: [addr], ttl };
   },
   'addr(bytes32,uint256)': async (db, name, args) => {
-    const { addr, ttl } = await db.addr(name, args[0]);
+    let coinType = args[0];
+    if (typeof coinType === "object") {
+      coinType = coinType.toNumber();
+    }
+    const { addr, ttl } = await db.addr(name, coinType);
     return { result: [addr], ttl };
   },
   'text(bytes32,string)': async (db, name, args) => {
@@ -77,9 +81,6 @@ async function query(
     throw new Error('Name must be normalised');
   }
 
-  console.log("-----new request------")
-  console.log(signature, name, args.slice(1))
-
   if (ethers.utils.namehash(name) !== args[0]) {
     throw new Error('Name does not match namehash');
   }
@@ -89,18 +90,11 @@ async function query(
     throw new Error(`Unsupported query function ${signature}`);
   }
 
-  try {
-    const { result, ttl } = await handler(db, name, args.slice(1));
-    console.log({ signature, name, args: args.slice(1), result, ttl })
-    console.log("-----end of new request------")
-    return {
-      result: Resolver.encodeFunctionResult(signature, result),
-      validUntil: Math.floor(Date.now() / 1000 + ttl),
-    };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const { result, ttl } = await handler(db, name, args.slice(1));
+  return {
+    result: Resolver.encodeFunctionResult(signature, result),
+    validUntil: Math.floor(Date.now() / 1000 + ttl),
+  };
 }
 
 export function makeServer(signer: ethers.utils.SigningKey, db: Database) {
