@@ -7,7 +7,7 @@ require("hardhat-deploy");
 require("hardhat-deploy-ethers");
 
 const owner = [process.env.OWNER_PRIVATE_KEY];
-const singers = process.env.SINGERS.split(";;");
+const signers = process.env.SIGNERS.split(";;");
 const gatewayUrls = (process.env.GATEWAY_URL || "").split(";;").map((url) => `${url}/{sender}/{data}.json`);
 
 /**
@@ -19,7 +19,7 @@ module.exports = {
   networks: {
     hardhat: {
       throwOnCallFailures: false,
-      singers,
+      signers,
       gatewayUrls,
     },
     ropsten: {
@@ -27,7 +27,7 @@ module.exports = {
       tags: ["test", "demo"],
       chainId: 3,
       accounts: owner,
-      singers,
+      signers,
       gatewayUrls,
     },
     rinkeby: {
@@ -35,15 +35,16 @@ module.exports = {
       tags: ["test", "demo"],
       chainId: 4,
       accounts: owner,
-      singers,
+      signers,
       gatewayUrls,
     },
     goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
+      // url: `https://goerli.infura.io/v3/${process.env.INFURA_ID}`,
+      url: "https://goerli.infura.io/v3/1e5daf82dd6e4cefb0c4982606872d75",
       tags: ["test", "demo"],
       chainId: 5,
       accounts: owner,
-      singers,
+      signers,
       gatewayUrls,
     },
     mainnet: {
@@ -51,7 +52,7 @@ module.exports = {
       tags: ["demo"],
       chainId: 1,
       accounts: owner,
-      singers,
+      signers,
       gatewayUrls,
     }
   },
