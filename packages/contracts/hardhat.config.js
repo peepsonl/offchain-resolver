@@ -6,8 +6,9 @@ require("@nomiclabs/hardhat-waffle");
 require("hardhat-deploy");
 require("hardhat-deploy-ethers");
 
-const realAccounts = process.env.PRIVATE_KEYS.split(";;");
-const gatewayUrls = process.env.GATEWAY_URL.split(";;").map((url) => `${url}/{sender}/{data}.json`);
+const owner = [process.env.OWNER_PRIVATE_KEY];
+const singers = process.env.SINGERS.split(";;");
+const gatewayUrls = (process.env.GATEWAY_URL || "").split(";;").map((url) => `${url}/{sender}/{data}.json`);
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -18,20 +19,23 @@ module.exports = {
   networks: {
     hardhat: {
       throwOnCallFailures: false,
+      singers,
       gatewayUrls,
     },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_ID}`,
       tags: ["test", "demo"],
       chainId: 3,
-      accounts: realAccounts,
+      accounts: owner,
+      singers,
       gatewayUrls,
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
       tags: ["test", "demo"],
       chainId: 4,
-      accounts: realAccounts,
+      accounts: owner,
+      singers,
       gatewayUrls,
     },
     goerli: {
@@ -39,14 +43,16 @@ module.exports = {
       url: "https://goerli.infura.io/v3/1e5daf82dd6e4cefb0c4982606872d75",
       tags: ["test", "demo"],
       chainId: 5,
-      accounts: realAccounts,
+      accounts: owner,
+      singers,
       gatewayUrls,
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_ID}`,
       tags: ["demo"],
       chainId: 1,
-      accounts: realAccounts,
+      accounts: owner,
+      singers,
       gatewayUrls,
     }
   },
