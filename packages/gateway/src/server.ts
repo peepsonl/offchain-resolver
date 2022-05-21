@@ -4,7 +4,20 @@ import { hexConcat, Result } from 'ethers/lib/utils';
 import { ETH_COIN_TYPE } from './utils';
 import { abi as IResolverService_abi } from './IResolverService.json';
 import { abi as Resolver_abi } from '@ensdomains/ens-contracts/artifacts/contracts/resolvers/Resolver.sol/Resolver.json';
+import * as namehash from "@ensdomains/eth-ens-namehash"
 const Resolver = new ethers.utils.Interface(Resolver_abi);
+
+function decodeDnsName(dnsname: Buffer) {
+  const labels = [];
+  let idx = 0;
+  while (true) {
+    const len = dnsname.readUInt8(idx);
+    if (len === 0) break;
+    labels.push(dnsname.slice(idx + 1, idx + len + 1).toString('utf8'));
+    idx += len + 1;
+  }
+  return labels.join('.');
+}
 
 interface DatabaseResult {
   result: any[];
@@ -64,6 +77,9 @@ async function query(
     throw new Error('Name must be normalised');
   }
 
+  console.log("-----new request------")
+  console.log(signature, name, args.slice(1))
+
   if (ethers.utils.namehash(name) !== args[0]) {
     throw new Error('Name does not match namehash');
   }
@@ -73,11 +89,18 @@ async function query(
     throw new Error(`Unsupported query function ${signature}`);
   }
 
-  const { result, ttl } = await handler(db, name, args.slice(1));
-  return {
-    result: Resolver.encodeFunctionResult(signature, result),
-    validUntil: Math.floor(Date.now() / 1000 + ttl),
-  };
+  try {
+    const { result, ttl } = await handler(db, name, args.slice(1));
+    console.log({ signature, name, args: args.slice(1), result, ttl })
+    console.log("-----end of new request------")
+    return {
+      result: Resolver.encodeFunctionResult(signature, result),
+      validUntil: Math.floor(Date.now() / 1000 + ttl),
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export function makeServer(signer: ethers.utils.SigningKey, db: Database) {
@@ -86,9 +109,9 @@ export function makeServer(signer: ethers.utils.SigningKey, db: Database) {
     {
       type: 'resolve',
       func: async ([encodedName, data]: Result, request) => {
-        // const name = decodeDnsName(Buffer.from(encodedName.slice(2), 'hex'));
+        const name = decodeDnsName(Buffer.from(encodedName.slice(2), 'hex'));
         // Query the database
-        const { result, validUntil } = await query(db, encodedName, data);
+        const { result, validUntil } = await query(db, name, data);
 
         // Hash and sign the response
         let messageHash = ethers.utils.solidityKeccak256(

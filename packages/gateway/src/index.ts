@@ -1,6 +1,5 @@
 import { makeApp } from './server';
 import { Command } from 'commander';
-import { readFileSync } from 'fs';
 import { ethers } from 'ethers';
 import { ZksyncDatabase } from './zksync';
 const program = new Command();
@@ -14,11 +13,6 @@ program
 program.parse(process.argv);
 const options = program.opts();
 let privateKey = options.privateKey;
-if (privateKey.startsWith('@')) {
-  privateKey = ethers.utils.arrayify(
-    readFileSync(privateKey.slice(1), { encoding: 'utf-8' })
-  );
-}
 const address = ethers.utils.computeAddress(privateKey);
 const signer = new ethers.utils.SigningKey(privateKey);
 const db = new ZksyncDatabase(options.contractAddress);
